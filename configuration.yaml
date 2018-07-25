@@ -1,0 +1,287 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 53.3389
+  longitude: -6.2595
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 11
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Dublin
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+
+http:
+  # Secrets are defined in the file secrets.yaml
+  # api_password: pAIRtfWB5Ri6
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  # base_url: example.duckdns.org:8123
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+logger:
+  logs:
+    yeelight: debug
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Weather prediction
+sensor:
+  - platform: yr
+
+# Text to speech
+tts:
+  - platform: google
+
+ifttt:
+  key:  
+
+media_player:
+  - platform: spotify
+    client_id: 
+    client_secret: 
+    aliases:
+        48d6d546f04c: 'Bed Room'
+        a477333fcbfe: 'Living Room'
+
+sensor:
+  - platform: transmission
+    host: 
+    name: Torrents
+    username: cian
+    password: 
+    monitored_variables:
+      - 'current_status'
+      - 'download_speed'
+      - 'upload_speed'
+      - 'active_torrents'
+
+light:
+  - platform: yeelight
+    devices:
+      192.168.0.202:
+        name: TV Light Strip
+        transition: 1000
+        use_music_mode: True #(defaults to False)
+        save_on_change: True #(defaults to True)
+      192.168.0.122:
+        name: Couch Light Strip
+        transition: 1000
+        use_music_mode: True #(defaults to False)
+        save_on_change: True #(defaults to True)
+
+scene:
+  - name: Turn Off All Lights
+    entities:
+        light.tv_light_strip:
+            state: off
+            transition: 1
+        light.couch_light_strip:
+            state: off
+            transition: 2
+        light.lamp:
+            state: off
+            transition: 3
+        light.main:
+            state: off
+            transition: 4
+        light.reading_lamp:
+            state: off
+            transition: 4
+        light.alans_room:
+            state: off
+            transition: 6
+  - name: Its a Party
+    entities:
+        light.tv_light_strip:
+            state: on
+            transition: 2
+            effect: Disco
+            brightness: 254
+        light.couch_light_strip:
+            state: on
+            transition: 2
+            effect: Disco
+            brightness: 254
+        light.lamp:
+            state: on
+            transition: 2
+            brightness: 155
+  - name: Livingroom normal
+    entities:
+        light.tv_light_strip:
+            state: on
+            transition: 2
+            brightness: 254
+        light.couch_light_strip:
+            state: on
+            transition: 2
+            brightness: 254
+        light.lamp:
+            state: on
+            transition: 2
+            brightness: 255
+  - name: Livingroom off
+    entities:
+        light.lamp:
+            state: off
+            transition: 2
+        light.tv_light_strip:
+            state: off
+            transition: 2
+        light.couch_light_strip:
+            state: off
+            transition: 2
+  - name: Bedroom off
+    entities:
+        light.main:
+            state: off
+            transition: 2
+        light.reading_lamp:
+            state: off
+            transition: 2
+  - name: Bedroom evening
+    entities:
+        light.reading_lamp:
+            state: on
+            transition: 2
+            brightness: 100
+        light.main:
+            state: off
+            transition: 2
+  - name: Bedroom relax
+    entities:
+        light.reading_lamp:
+            state: on
+            transition: 2
+            brightness: 88
+            color_temp: 454
+            min_mireds: 154
+            max_mireds: 500
+        light.main:
+            state: on
+            transition: 2
+            brightness: 14
+            color_temp: 454
+            min_mireds: 154
+            max_mireds: 500
+
+automation:
+  - alias: "Media player paused/stopped"
+    trigger:
+      - platform: state
+        entity_id: media_player.roku_3__1wt46y009811
+        from: 'playing'
+        to: 'idle'
+      - platform: state
+        entity_id: media_player.roku_3__1wt46y009811
+        from: 'playing'
+        to: 'paused'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+        service: scene.turn_on
+        entity_id: scene.livingroom_normal
+
+  - alias: "Media player playing"
+    trigger:
+      - platform: state
+        entity_id: media_player.roku_3__1wt46y009811
+        to: 'playing'
+        from: 'idle'
+      - platform: state
+        entity_id: media_player.roku_3__1wt46y009811
+        from: 'paused'
+        to: 'playing'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+        service: scene.turn_on
+        entity_id: scene.livingroom_off
+
+  - alias: "Bedtime"
+    trigger:
+      - platform: state
+        entity_id: sun.sun
+        to: 'below_horizon'
+        from: 'above_horizon'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+        service: scene.turn_on
+        entity_id: scene.bedroom_evening
+
+  - alias: Startup Notification
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      service: ifttt.trigger
+      data: {"event":"TestHA_trigger", "value1":"Hello World!"}
+
+group: !include groups.yaml
+# automation: !include automations.yaml
+script: !include scripts.yaml
+
+device_tracker:
+  - platform: upc_connect
+    host: 192.168.0.1
+    password: Upthebanner95
+    interval_seconds: 12
+    consider_home: 180
+    track_new_devices: yes
+
+zone:
+  - name: Work
+    latitude: 52.671543
+    longitude: -8.546564
+    icon: mdi:atlassian
+
+  - name: Newmarket
+    latitude: 52.729099
+    longitude: -8.914079
+    icon: mdi:paw
+
+  - name: Home
+    latitude: 52.6644634
+    longitude: -8.6262546

@@ -1,0 +1,55 @@
+default_view:
+  view: yes
+  icon: mdi:home
+  entities:
+    - group.livingroom
+    - group.bedroom_cian
+    - group.bedroom_alan
+livingroom:
+  name: Livingroom
+  entities:
+    - light.tv_light_strip
+    - light.couch_light_strip
+    - light.lamp
+    - media_player.living_room_home
+    - media_player.tv
+    - media_player.roku_1wt46y009811
+    - device_tracker.ps4
+    - device_tracker.roku
+    - device_tracker.raspberry_pi
+    - device_tracker.google_home
+    - device_tracker.tv_chromecast
+    - scene.its_a_party
+    - scene.livingroom_normal
+    - scene.livingroom_off
+    - scene.turn_off_all_lights
+bedroom_cian:
+  name: Cians Room
+  icon: mdi:hotel
+  view: yes
+  entities:
+    - light.main
+    - light.reading_lamp
+    - media_player.bedroom_speaker
+    - device_tracker.monitor_chromecast
+    - device_tracker.google_home_mini
+    - device_tracker.cian_mac
+    - device_tracker.linux_box
+    - device_tracker.cians_phone
+    - device_tracker.yi_camera
+    - scene.bedroom_evening
+    - scene.bedroom_off
+bedroom_alan:
+  name: Alans Room
+  icon: mdi:account-multiple
+  view: yes
+  entities:
+    - light.alans_room
+    - device_tracker.echo
+    - device_tracker.alans_iphone
+climate:
+  name: Climate
+  view: no
+  entities:
+    - sensor.bedroom_temp
+    - sensor.porch_temp
